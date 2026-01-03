@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LinkOn Forms</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <style>
+        :root {
+            --primary: #2DD4BF;
+            --primary-dark: #14B8A6;
+            --danger: #EF4444;
+            --danger-light: #FEF2F2;
+            --warning: #F59E0B;
+            --warning-light: #FFFBEB;
+            --success: #10B981;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-100);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* 헤더 */
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray-600);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .version {
+            font-size: 12px;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .header-badge {
+            background: var(--primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--gray-600);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 컨테이너 */
+        .container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 건물 정보 카드 */
+        .building-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .building-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .building-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .building-company {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .building-location {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .building-location::before {
+            content: '📍';
+            font-size: 12px;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge.danger {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1px solid #FECACA;
+        }
+
+        .status-badge.safe {
+            background: #ECFDF5;
+            color: var(--success);
+            border: 1px solid #A7F3D0;
+        }
+
+        /* 점수 카드 */
+        .score-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 2px solid var(--gray-100);
+        }
+
+        .score-circle {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+
+        .score-circle svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .score-circle .bg {
+            fill: none;
+            stroke: var(--gray-200);
+            stroke-width: 12;
+        }
+
+        .score-circle .progress {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-dasharray: 408;
+            stroke-dashoffset: 408;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .score-circle .progress.warning {
+            stroke: var(--warning);
+        }
+
+        .score-circle .progress.danger {
+            stroke: var(--danger);
+        }
+
+        .score-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: var(--gray-400);
+            letter-spacing: 2px;
+            margin-top: 8px;
+        }
+
+        .score-divider {
+            height: 1px;
+            background: var(--gray-200);
+            margin: 20px 0;
+        }
+
+        .forms-count {
+            text-align: center;
+        }
+
+        .forms-count-label {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .forms-count-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* 섹션 타이틀 */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        /* 양식 목록 */
+        .form-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-item {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: 2px solid transparent;
+        }
+
+        .form-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .form-item:active {
+            transform: translateY(0);
+        }
+
+        .form-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .form-icon.pm { background: #DBEAFE; }
+        .form-icon.sf { background: #D1FAE5; }
+        .form-icon.wr { background: #FEF3C7; }
+        .form-icon.fr { background: #FEE2E2; }
+        .form-icon.mt { background: #E0E7FF; }
+        .form-icon.in { background: #FCE7F3; }
+
+        .form-info {
+            flex: 1;
+        }
+
+        .form-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .form-code {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .form-arrow {
+            color: var(--gray-400);
+            font-size: 18px;
+        }
+
+        /* 준비중 표시 */
+        .form-item.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-item.disabled:hover {
+            border-color: transparent;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .coming-soon {
+            font-size: 11px;
+            background: var(--gray-200);
+            color: var(--gray-500);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* 알림 카드 */
+        .alert-card {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-card.danger {
+            border-left-color: var(--danger);
+        }
+
+        .alert-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: var(--warning-light);
+        }
+
+        .alert-card.danger .alert-icon {
+            background: var(--danger-light);
+        }
+
+        .alert-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        /* 하단 탭바 */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--gray-400);
+            font-size: 11px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .tab-item.active {
+            color: var(--gray-900);
+        }
+
+        .tab-item .tab-icon {
+            font-size: 22px;
+        }
+
+        /* 모달/사이드 메뉴 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 201;
+            transition: left 0.3s;
+            padding: 24px;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .side-menu-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .side-menu-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .side-menu-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .side-menu-version {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .side-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+        }
+
+        .side-menu-item:hover {
+            color: var(--primary);
+        }
+
+        /* 건물 선택 모달 */
+        .building-selector {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 300;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .building-selector.active {
+            transform: translateY(0);
+        }
+
+        .building-selector-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .building-selector-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .building-selector-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray-500);
+            cursor: pointer;
+        }
+
+        .building-list {
+            padding: 16px;
+        }
+
+        .building-option {
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .building-option:hover,
+        .building-option.selected {
+            border-color: var(--primary);
+            background: #F0FDFA;
+        }
+
+        .building-option-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .building-option-address {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-item {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+
+        .form-item:nth-child(1) { animation-delay: 0.1s; }
+        .form-item:nth-child(2) { animation-delay: 0.15s; }
+        .form-item:nth-child(3) { animation-delay: 0.2s; }
+        .form-item:nth-child(4) { animation-delay: 0.25s; }
+        .form-item:nth-child(5) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="logo">LinkOn <span class="version">Forms</span></div>
+        </div>
+        <div class="header-right">
+            <span class="header-badge">v1.0</span>
+            <button class="icon-btn">✏️</button>
+        </div>
+    </header>
+
+    <!-- 사이드 메뉴 -->
+    <div class="overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu">
+        <div class="side-menu-header">
+            <div class="side-menu-logo">L</div>
+            <div>
+                <div class="side-menu-title">LinkOn Forms</div>
+                <div class="side-menu-version">v1.0.0</div>
+            </div>
+        </div>
+        <div class="side-menu-item" onclick="openBuildingSelector()">🏢 건물 변경</div>
+        <div class="side-menu-item">📋 양식 관리</div>
+        <div class="side-menu-item">📊 작성 이력</div>
+        <div class="side-menu-item">⚙️ 설정</div>
+        <div class="side-menu-item">ℹ️ 앱 정보</div>
+    </div>
+
+    <!-- 건물 선택 모달 -->
+    <div class="building-selector" id="buildingSelector">
+        <div class="building-selector-header">
+            <span class="building-selector-title">건물 선택</span>
+            <button class="building-selector-close" onclick="closeBuildingSelector()">✕</button>
+        </div>
+        <div class="building-list">
+            <div class="building-option selected" onclick="selectBuilding('BC카드 퓨처센터', '삼성sds', '서울시 서초구')">
+                <div class="building-option-name">BC카드 퓨처센터</div>
+                <div class="building-option-address">서울시 서초구 · 삼성sds</div>
+            </div>
+            <div class="building-option" onclick="selectBuilding('강남 타워', 'SK텔레콤', '서울시 강남구')">
+                <div class="building-option-name">강남 타워</div>
+                <div class="building-option-address">서울시 강남구 · SK텔레콤</div>
+            </div>
+            <div class="building-option" onclick="selectBuilding('판교 테크원', 'KT', '경기도 성남시')">
+                <div class="building-option-name">판교 테크원</div>
+                <div class="building-option-address">경기도 성남시 · KT</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="container">
+        <!-- 건물 정보 -->
+        <div class="building-card" onclick="openBuildingSelector()">
+            <div class="building-header">
+                <div>
+                    <div class="building-name" id="buildingName">BC카드 퓨처센터</div>
+                    <div class="building-company" id="buildingCompany">삼성sds</div>
+                    <div class="building-location" id="buildingLocation">서울시 서초구</div>
+                </div>
+                <span class="status-badge safe">정상</span>
+            </div>
+        </div>
+
+        <!-- 점수 카드 -->
+        <div class="score-card">
+            <div class="score-circle">
+                <svg viewBox="0 0 140 140">
+                    <circle class="bg" cx="70" cy="70" r="65"/>
+                    <circle class="progress" cx="70" cy="70" r="65" id="scoreProgress"/>
+                </svg>
+                <div class="score-value">
+                    <div class="score-number" id="scoreNumber">0</div>
+                    <div class="score-label">FORMS READY</div>
+                </div>
+            </div>
+            <div class="score-divider"></div>
+            <div class="forms-count">
+                <div class="forms-count-label">📝 이번 달 작성 완료</div>
+                <div class="forms-count-value">12건</div>
+            </div>
+        </div>
+
+        <!-- 양식 목록 -->
+        <div class="section-title">📋 점검 양식</div>
+        <div class="form-list">
+            <a href="linkon_inspection_form.html" class="form-item">
+                <div class="form-icon pm">📊</div>
+                <div class="form-info">
+                    <div class="form-name">유지보수 결과 보고서</div>
+                    <div class="form-code">LO-PM-001-v1 · 성능점검</div>
+                </div>
+                <span class="form-arrow">›</span>
+            </a>
+            <a href="linkon_facility_checklist.html" class="form-item">
+                <div class="form-icon sf">📋</div>
+                <div class="form-info">
+                    <div class="form-name">설비 현황표</div>
+                    <div class="form-code">LO-SF-001-v1 · 설비관리</div>
+                </div>
+                <span class="form-arrow">›</span>
+            </a>
+            <div class="form-item disabled">
+                <div class="form-icon wr">📝</div>
+                <div class="form-info">
+                    <div class="form-name">작업신고서</div>
+                    <div class="form-code">LO-WR-001 · 작업보고</div>
+                </div>
+                <span class="coming-soon">준비중</span>
+            </div>
+            <div class="form-item disabled">
+                <div class="form-icon fr">🔧</div>
+                <div class="form-info">
+                    <div class="form-name">장애처리 보고서</div>
+                    <div class="form-code">LO-FR-001 · 장애관리</div>
+                </div>
+                <span class="coming-soon">준비중</span>
+            </div>
+            <div class="form-item disabled">
+                <div class="form-icon in">📅</div>
+                <div class="form-info">
+                    <div class="form-name">월간 점검표</div>
+                    <div class="form-code">LO-IN-001 · 정기점검</div>
+                </div>
+                <span class="coming-soon">준비중</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 하단 탭바 -->
+    <nav class="tab-bar">
+        <button class="tab-item active">
+            <span class="tab-icon">🏠</span>
+            <span>홈</span>
+        </button>
+        <button class="tab-item">
+            <span class="tab-icon">📋</span>
+            <span>양식</span>
+        </button>
+        <button class="tab-item">
+            <span class="tab-icon">📊</span>
+            <span>이력</span>
+        </button>
+        <button class="tab-item">
+            <span class="tab-icon">⚙️</span>
+            <span>설정</span>
+        </button>
+    </nav>
+
+    <script>
+        // 점수 애니메이션
+        function animateScore(target) {
+            const scoreNumber = document.getElementById('scoreNumber');
+            const progress = document.getElementById('scoreProgress');
+            const circumference = 408;
+            
+            let current = 0;
+            const duration = 1500;
+            const increment = target / (duration / 16);
+            
+            function update() {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    scoreNumber.textContent = target;
+                    const offset = circumference - (target / 100) * circumference;
+                    progress.style.strokeDashoffset = offset;
+                    
+                    // 색상 변경
+                    if (target < 50) {
+                        progress.classList.add('danger');
+                    } else if (target < 70) {
+                        progress.classList.add('warning');
+                    }
+                    return;
+                }
+                
+                scoreNumber.textContent = Math.round(current);
+                const offset = circumference - (current / 100) * circumference;
+                progress.style.strokeDashoffset = offset;
+                requestAnimationFrame(update);
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // 페이지 로드 시 애니메이션
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                animateScore(2); // 준비된 양식 수 (2개)
+            }, 500);
+        });
+
+        // 사이드 메뉴 토글
+        function toggleMenu() {
+            document.querySelector('.overlay').classList.toggle('active');
+            document.querySelector('.side-menu').classList.toggle('active');
+        }
+
+        // 건물 선택 모달
+        function openBuildingSelector() {
+            document.getElementById('buildingSelector').classList.add('active');
+            toggleMenu();
+        }
+
+        function closeBuildingSelector() {
+            document.getElementById('buildingSelector').classList.remove('active');
+        }
+
+        function selectBuilding(name, company, location) {
+            document.getElementById('buildingName').textContent = name;
+            document.getElementById('buildingCompany').textContent = company;
+            document.getElementById('buildingLocation').textContent = location;
+            
+            // 선택 표시 업데이트
+            document.querySelectorAll('.building-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            closeBuildingSelector();
+        }
+
+        // 탭 전환
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

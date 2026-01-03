@@ -594,6 +594,250 @@
             color: var(--gray-500);
         }
 
+        /* 월간 점검 카드 */
+        .monthly-check-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 2px solid var(--primary);
+        }
+
+        .monthly-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .monthly-month {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .monthly-status {
+            font-size: 12px;
+            background: var(--warning-light);
+            color: var(--warning);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .monthly-progress {
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .monthly-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .monthly-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* 최근 작성 */
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recent-item {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .recent-icon {
+            font-size: 20px;
+        }
+
+        .recent-info {
+            flex: 1;
+        }
+
+        .recent-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .recent-date {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .recent-badge {
+            font-size: 11px;
+            background: #D1FAE5;
+            color: var(--success);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        /* 히스토리 필터 */
+        .history-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--gray-900);
+            color: white;
+            border-color: var(--gray-900);
+        }
+
+        /* 히스토리 리스트 */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .history-date-group {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .history-date {
+            padding: 10px 16px;
+            background: var(--gray-50);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .history-item {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .history-icon {
+            font-size: 18px;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .history-building {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .history-time {
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        /* 설정 리스트 */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .settings-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .settings-item:hover {
+            background: var(--gray-50);
+        }
+
+        .settings-icon {
+            font-size: 22px;
+        }
+
+        .settings-info {
+            flex: 1;
+        }
+
+        .settings-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .settings-desc {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .settings-arrow {
+            color: var(--gray-400);
+            font-size: 18px;
+        }
+
         /* 애니메이션 */
         @keyframes fadeInUp {
             from {
@@ -670,7 +914,7 @@
     </div>
 
     <!-- 메인 컨텐츠 -->
-    <div class="container">
+    <div class="container" id="homeTab">
         <!-- 건물 정보 -->
         <div class="building-card" onclick="openBuildingSelector()">
             <div class="building-header">
@@ -702,48 +946,186 @@
             </div>
         </div>
 
-        <!-- 양식 목록 -->
-        <div class="section-title">📋 점검 양식</div>
+        <!-- 월간 점검표 바로가기 -->
+        <div class="section-title">📅 월간 점검</div>
+        <div class="monthly-check-card">
+            <div class="monthly-header">
+                <span class="monthly-month">2026년 1월</span>
+                <span class="monthly-status">진행중</span>
+            </div>
+            <div class="monthly-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                </div>
+                <span class="progress-text">12 / 30 항목 완료</span>
+            </div>
+            <a href="linkon_monthly_checklist.html" class="monthly-btn">
+                📋 월간 점검표 작성하기
+            </a>
+        </div>
+
+        <!-- 최근 작성 이력 -->
+        <div class="section-title">🕐 최근 작성</div>
+        <div class="recent-list">
+            <div class="recent-item">
+                <div class="recent-icon">📊</div>
+                <div class="recent-info">
+                    <div class="recent-name">유지보수 결과 보고서</div>
+                    <div class="recent-date">2026.01.03 14:30</div>
+                </div>
+                <span class="recent-badge">완료</span>
+            </div>
+            <div class="recent-item">
+                <div class="recent-icon">📋</div>
+                <div class="recent-info">
+                    <div class="recent-name">설비 현황표</div>
+                    <div class="recent-date">2026.01.02 10:15</div>
+                </div>
+                <span class="recent-badge">완료</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 양식 탭 컨텐츠 -->
+    <div class="container" id="formsTab" style="display: none;">
+        <div class="section-title">📊 성능점검</div>
         <div class="form-list">
             <a href="linkon_inspection_form.html" class="form-item">
                 <div class="form-icon pm">📊</div>
                 <div class="form-info">
                     <div class="form-name">유지보수 결과 보고서</div>
-                    <div class="form-code">LO-PM-001-v1 · 성능점검</div>
+                    <div class="form-code">LO-PM-001-v1</div>
                 </div>
                 <span class="form-arrow">›</span>
             </a>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">📋 설비관리</div>
+        <div class="form-list">
             <a href="linkon_facility_checklist.html" class="form-item">
                 <div class="form-icon sf">📋</div>
                 <div class="form-info">
                     <div class="form-name">설비 현황표</div>
-                    <div class="form-code">LO-SF-001-v1 · 설비관리</div>
+                    <div class="form-code">LO-SF-001-v1</div>
                 </div>
                 <span class="form-arrow">›</span>
             </a>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">📝 작업보고</div>
+        <div class="form-list">
             <div class="form-item disabled">
                 <div class="form-icon wr">📝</div>
                 <div class="form-info">
                     <div class="form-name">작업신고서</div>
-                    <div class="form-code">LO-WR-001 · 작업보고</div>
+                    <div class="form-code">LO-WR-001</div>
                 </div>
                 <span class="coming-soon">준비중</span>
             </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">🔧 장애관리</div>
+        <div class="form-list">
             <div class="form-item disabled">
                 <div class="form-icon fr">🔧</div>
                 <div class="form-info">
                     <div class="form-name">장애처리 보고서</div>
-                    <div class="form-code">LO-FR-001 · 장애관리</div>
+                    <div class="form-code">LO-FR-001</div>
                 </div>
                 <span class="coming-soon">준비중</span>
             </div>
-            <div class="form-item disabled">
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">📅 정기점검</div>
+        <div class="form-list">
+            <a href="linkon_monthly_checklist.html" class="form-item">
                 <div class="form-icon in">📅</div>
                 <div class="form-info">
                     <div class="form-name">월간 점검표</div>
-                    <div class="form-code">LO-IN-001 · 정기점검</div>
+                    <div class="form-code">LO-IN-001-v1</div>
                 </div>
-                <span class="coming-soon">준비중</span>
+                <span class="form-arrow">›</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- 이력 탭 컨텐츠 -->
+    <div class="container" id="historyTab" style="display: none;">
+        <div class="section-title">📊 작성 이력</div>
+        <div class="history-filter">
+            <button class="filter-btn active">전체</button>
+            <button class="filter-btn">이번 주</button>
+            <button class="filter-btn">이번 달</button>
+        </div>
+        <div class="history-list">
+            <div class="history-date-group">
+                <div class="history-date">2026년 1월 3일</div>
+                <div class="history-item">
+                    <div class="history-icon">📊</div>
+                    <div class="history-info">
+                        <div class="history-name">유지보수 결과 보고서</div>
+                        <div class="history-building">BC카드 퓨처센터</div>
+                    </div>
+                    <div class="history-time">14:30</div>
+                </div>
+            </div>
+            <div class="history-date-group">
+                <div class="history-date">2026년 1월 2일</div>
+                <div class="history-item">
+                    <div class="history-icon">📋</div>
+                    <div class="history-info">
+                        <div class="history-name">설비 현황표</div>
+                        <div class="history-building">BC카드 퓨처센터</div>
+                    </div>
+                    <div class="history-time">10:15</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-icon">📅</div>
+                    <div class="history-info">
+                        <div class="history-name">월간 점검표</div>
+                        <div class="history-building">BC카드 퓨처센터</div>
+                    </div>
+                    <div class="history-time">09:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 설정 탭 컨텐츠 -->
+    <div class="container" id="settingsTab" style="display: none;">
+        <div class="section-title">⚙️ 설정</div>
+        <div class="settings-list">
+            <div class="settings-item">
+                <div class="settings-icon">🏢</div>
+                <div class="settings-info">
+                    <div class="settings-name">건물 관리</div>
+                    <div class="settings-desc">등록된 건물 목록 관리</div>
+                </div>
+                <span class="settings-arrow">›</span>
+            </div>
+            <div class="settings-item">
+                <div class="settings-icon">📧</div>
+                <div class="settings-info">
+                    <div class="settings-name">전송 설정</div>
+                    <div class="settings-desc">이메일, 텔레그램 알림 설정</div>
+                </div>
+                <span class="settings-arrow">›</span>
+            </div>
+            <div class="settings-item">
+                <div class="settings-icon">📁</div>
+                <div class="settings-info">
+                    <div class="settings-name">저장 위치</div>
+                    <div class="settings-desc">Google Drive 연동</div>
+                </div>
+                <span class="settings-arrow">›</span>
+            </div>
+            <div class="settings-item">
+                <div class="settings-icon">ℹ️</div>
+                <div class="settings-info">
+                    <div class="settings-name">앱 정보</div>
+                    <div class="settings-desc">버전 1.0.0</div>
+                </div>
+                <span class="settings-arrow">›</span>
             </div>
         </div>
     </div>
@@ -843,9 +1225,33 @@
         }
 
         // 탭 전환
-        document.querySelectorAll('.tab-item').forEach(tab => {
+        const tabs = document.querySelectorAll('.tab-item');
+        const tabContents = {
+            '홈': 'homeTab',
+            '양식': 'formsTab',
+            '이력': 'historyTab',
+            '설정': 'settingsTab'
+        };
+
+        tabs.forEach(tab => {
             tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                // 탭 활성화
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                // 컨텐츠 전환
+                const tabName = this.querySelector('span:last-child').textContent;
+                Object.values(tabContents).forEach(id => {
+                    document.getElementById(id).style.display = 'none';
+                });
+                document.getElementById(tabContents[tabName]).style.display = 'block';
+            });
+        });
+
+        // 필터 버튼
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
             });
         });

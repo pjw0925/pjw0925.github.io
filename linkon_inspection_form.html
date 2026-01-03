@@ -36,6 +36,41 @@
             padding: 16px;
         }
 
+        /* 상단 헤더 */
+        .top-header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray-700);
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .header-code {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -535,6 +570,13 @@
     </style>
 </head>
 <body>
+    <!-- 상단 헤더 -->
+    <header class="top-header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <span class="header-title">유지보수 결과 보고서</span>
+        <span class="header-code">LO-PM-001</span>
+    </header>
+
     <div class="container">
         <!-- 헤더 -->
         <div class="header">

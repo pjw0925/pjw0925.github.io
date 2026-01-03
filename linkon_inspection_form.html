@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LinkOn - 정보통신설비 유지보수 결과 보고서</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #004999;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 헤더 */
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            text-align: center;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* 카드 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* 입력 필드 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* 점검 항목 테이블 */
+        .inspection-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .inspection-table th {
+            background: var(--gray-100);
+            padding: 12px 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            text-align: center;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .inspection-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: middle;
+        }
+
+        .inspection-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .item-icon.voltage { background: #FEF3C7; }
+        .item-icon.ground { background: #DBEAFE; }
+        .item-icon.battery { background: #FEE2E2; }
+        .item-icon.temp { background: #D1FAE5; }
+        .item-icon.label { background: #E0E7FF; }
+        .item-icon.broadcast { background: #FCE7F3; }
+        .item-icon.cctv { background: #F3E8FF; }
+
+        .item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .item-standard {
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+
+        .result-input {
+            width: 70px;
+            padding: 8px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .result-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* 판정 버튼 */
+        .judgment-group {
+            display: flex;
+            gap: 4px;
+        }
+
+        .judgment-btn {
+            padding: 6px 10px;
+            border: 2px solid var(--gray-200);
+            border-radius: 6px;
+            background: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .judgment-btn.pass {
+            color: var(--success);
+        }
+
+        .judgment-btn.pass.active {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .judgment-btn.fail {
+            color: var(--danger);
+        }
+
+        .judgment-btn.fail.active {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        /* 서명 영역 */
+        .signature-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .signature-canvas {
+            width: 100%;
+            height: 100px;
+            border: 2px dashed var(--gray-300);
+            border-radius: 10px;
+            background: var(--gray-50);
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .signature-canvas.signed {
+            border-style: solid;
+            border-color: var(--success);
+        }
+
+        .clear-signature {
+            margin-top: 8px;
+            padding: 6px 12px;
+            border: none;
+            background: var(--gray-200);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+
+        /* 제출 버튼 */
+        .submit-section {
+            margin-top: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 상태 메시지 */
+        .status-message {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #D1FAE5;
+            color: #065F46;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            display: block;
+        }
+
+        .status-message.loading {
+            background: #DBEAFE;
+            color: #1E40AF;
+            display: block;
+        }
+
+        /* PDF 미리보기 (숨김) */
+        #pdf-content {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 210mm;
+            background: white;
+            padding: 20mm;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .pdf-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pdf-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .pdf-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pdf-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .pdf-info-table td {
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .pdf-info-table .label {
+            background: #f5f5f5;
+            font-weight: 600;
+            width: 100px;
+            text-align: center;
+        }
+
+        .pdf-main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .pdf-main-table th,
+        .pdf-main-table td {
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .pdf-main-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        .pdf-main-table .item-cell {
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .pdf-footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .pdf-confirm-text {
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .pdf-signature-area {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+        }
+
+        .pdf-signature-box {
+            text-align: center;
+        }
+
+        .pdf-signature-label {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .pdf-signature-line {
+            width: 150px;
+            height: 60px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .pdf-signature-line img {
+            max-height: 50px;
+            max-width: 140px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 400px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .signature-area {
+                grid-template-columns: 1fr;
+            }
+
+            .inspection-table th,
+            .inspection-table td {
+                padding: 8px 4px;
+            }
+
+            .result-input {
+                width: 60px;
+                padding: 6px;
+            }
+        }
+
+        /* 로딩 스피너 */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .submit-btn.loading .spinner {
+            display: block;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">L</div>
+                <div>
+                    <div class="logo-text">LinkOn</div>
+                    <div class="logo-sub">스마트 설비 관리 시스템</div>
+                </div>
+            </div>
+            <div class="form-title">정보통신설비 유지보수 결과 보고서</div>
+            <div class="form-subtitle">( 성능 점검 및 측정 결과 )</div>
+        </div>
+
+        <!-- 기본 정보 -->
+        <div class="card">
+            <div class="card-title">기본 정보</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">건물명</label>
+                    <input type="text" class="form-input" id="buildingName" placeholder="예: 본사 사옥">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">점검일자</label>
+                    <input type="date" class="form-input" id="inspectionDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">주소</label>
+                <input type="text" class="form-input" id="address" placeholder="예: 서울특별시 강남구...">
+            </div>
+        </div>
+
+        <!-- 점검 항목 -->
+        <div class="card">
+            <div class="card-title">점검 항목</div>
+            <table class="inspection-table">
+                <thead>
+                    <tr>
+                        <th style="width: 45%">점검항목</th>
+                        <th style="width: 25%">측정값</th>
+                        <th style="width: 30%">판정</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 상용 전원 전압 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon voltage">⚡</div>
+                                <div>
+                                    <div class="item-name">상용 전원 전압 측정</div>
+                                    <div class="item-standard">기준: 220V ±13V</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="result-input" id="voltage" placeholder="V" data-min="207" data-max="233" data-unit="V">
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="voltage" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="voltage" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 접지 저항값 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon ground">🔌</div>
+                                <div>
+                                    <div class="item-name">접지 저항값 측정</div>
+                                    <div class="item-standard">기준: 10Ω 이하</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="result-input" id="ground" placeholder="Ω" data-max="10" data-unit="Ω">
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="ground" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="ground" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 배터리 외관 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon battery">🔋</div>
+                                <div>
+                                    <div class="item-name">배터리 외관 점검</div>
+                                    <div class="item-standard">스웰링(부풀음) 여부</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <select class="result-input" id="battery" style="width: 80px;">
+                                <option value="">선택</option>
+                                <option value="양호">양호</option>
+                                <option value="부풀음">부풀음</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="battery" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="battery" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- MDF실 온습도 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon temp">🌡️</div>
+                                <div>
+                                    <div class="item-name">MDF실 온습도</div>
+                                    <div class="item-standard">기준: 20~27℃ / 50%</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="result-input" id="temperature" placeholder="℃/%" data-unit="℃/%">
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="temperature" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="temperature" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 단자대 라벨링 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon label">🏷️</div>
+                                <div>
+                                    <div class="item-name">단자대 라벨링 상태</div>
+                                    <div class="item-standard">식별표 부착</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <select class="result-input" id="labeling" style="width: 80px;">
+                                <option value="">선택</option>
+                                <option value="양호">양호</option>
+                                <option value="미흡">미흡</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="labeling" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="labeling" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- 비상방송 연동 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon broadcast">📢</div>
+                                <div>
+                                    <div class="item-name">비상방송 연동 시험</div>
+                                    <div class="item-standard">화재신호 연동</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <select class="result-input" id="broadcast" style="width: 80px;">
+                                <option value="">선택</option>
+                                <option value="양호">양호</option>
+                                <option value="불량">불량</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="broadcast" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="broadcast" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- CCTV 녹화 기간 -->
+                    <tr>
+                        <td>
+                            <div class="inspection-item">
+                                <div class="item-icon cctv">📹</div>
+                                <div>
+                                    <div class="item-name">CCTV 녹화 기간</div>
+                                    <div class="item-standard">기준: 30일 이상</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="result-input" id="cctv" placeholder="일" data-min="30" data-unit="일">
+                        </td>
+                        <td>
+                            <div class="judgment-group">
+                                <button type="button" class="judgment-btn pass" data-target="cctv" data-value="pass">양호</button>
+                                <button type="button" class="judgment-btn fail" data-target="cctv" data-value="fail">불량</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 서명 -->
+        <div class="card">
+            <div class="card-title">확인 서명</div>
+            <p style="text-align: center; color: var(--gray-500); margin-bottom: 16px; font-size: 14px;">
+                위와 같이 점검하였음을 확인합니다
+            </p>
+            <div class="signature-area">
+                <div class="signature-box">
+                    <div class="signature-label">점검자</div>
+                    <canvas class="signature-canvas" id="inspectorSign"></canvas>
+                    <button type="button" class="clear-signature" data-target="inspectorSign">지우기</button>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-label">확인자</div>
+                    <canvas class="signature-canvas" id="confirmerSign"></canvas>
+                    <button type="button" class="clear-signature" data-target="confirmerSign">지우기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div class="card">
+            <div class="submit-section">
+                <button type="button" class="submit-btn" id="submitBtn">
+                    <span class="btn-text">📄 PDF 생성 및 제출</span>
+                    <div class="spinner"></div>
+                </button>
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF 생성용 숨김 영역 -->
+    <div id="pdf-content">
+        <div class="pdf-header">
+            <div class="pdf-title">정보통신설비 유지보수 결과 보고서</div>
+            <div class="pdf-subtitle">( 성능 점검 및 측정 결과 )</div>
+        </div>
+
+        <table class="pdf-info-table">
+            <tr>
+                <td class="label">건물명</td>
+                <td id="pdf-building"></td>
+                <td class="label">점검일자</td>
+                <td id="pdf-date"></td>
+            </tr>
+            <tr>
+                <td class="label">주소</td>
+                <td colspan="3" id="pdf-address"></td>
+            </tr>
+        </table>
+
+        <table class="pdf-main-table">
+            <thead>
+                <tr>
+                    <th style="width: 8%">분류</th>
+                    <th style="width: 27%">점검항목</th>
+                    <th style="width: 25%">기준</th>
+                    <th style="width: 20%">결과</th>
+                    <th style="width: 20%">판정</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-table-body">
+            </tbody>
+        </table>
+
+        <div class="pdf-footer">
+            <div class="pdf-confirm-text">위와 같이 점검하였음을 확인합니다</div>
+            <div class="pdf-signature-area">
+                <div class="pdf-signature-box">
+                    <div class="pdf-signature-label">점검자 : _____________ (인)</div>
+                    <div class="pdf-signature-line">
+                        <img id="pdf-inspector-sign" src="" alt="">
+                    </div>
+                </div>
+                <div class="pdf-signature-box">
+                    <div class="pdf-signature-label">확인자 : _____________ (인)</div>
+                    <div class="pdf-signature-line">
+                        <img id="pdf-confirmer-sign" src="" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 오늘 날짜 기본값 설정
+        document.getElementById('inspectionDate').valueAsDate = new Date();
+
+        // 판정 버튼 처리
+        document.querySelectorAll('.judgment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const target = this.dataset.target;
+                const value = this.dataset.value;
+                
+                // 같은 그룹의 다른 버튼 비활성화
+                this.parentElement.querySelectorAll('.judgment-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // 현재 버튼 활성화
+                this.classList.add('active');
+            });
+        });
+
+        // 측정값 입력 시 자동 판정
+        document.querySelectorAll('.result-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const id = this.id;
+                const value = parseFloat(this.value);
+                const min = parseFloat(this.dataset.min);
+                const max = parseFloat(this.dataset.max);
+                
+                let isPass = true;
+                
+                if (!isNaN(value)) {
+                    if (!isNaN(min) && value < min) isPass = false;
+                    if (!isNaN(max) && value > max) isPass = false;
+                }
+                
+                // select인 경우
+                if (this.tagName === 'SELECT') {
+                    isPass = this.value === '양호';
+                }
+                
+                // 자동으로 판정 버튼 선택
+                const buttons = document.querySelectorAll(`[data-target="${id}"]`);
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if ((isPass && btn.dataset.value === 'pass') || (!isPass && btn.dataset.value === 'fail')) {
+                        btn.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // 서명 캔버스 설정
+        class SignaturePad {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.isDrawing = false;
+                this.lastX = 0;
+                this.lastY = 0;
+                
+                this.setupCanvas();
+                this.bindEvents();
+            }
+            
+            setupCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width * 2;
+                this.canvas.height = rect.height * 2;
+                this.ctx.scale(2, 2);
+                this.ctx.strokeStyle = '#000';
+                this.ctx.lineWidth = 2;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+            }
+            
+            bindEvents() {
+                // 마우스 이벤트
+                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+                this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+                
+                // 터치 이벤트
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startDrawing(e.touches[0]);
+                });
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    this.draw(e.touches[0]);
+                });
+                this.canvas.addEventListener('touchend', () => this.stopDrawing());
+            }
+            
+            getPosition(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+            
+            startDrawing(e) {
+                this.isDrawing = true;
+                const pos = this.getPosition(e);
+                this.lastX = pos.x;
+                this.lastY = pos.y;
+            }
+            
+            draw(e) {
+                if (!this.isDrawing) return;
+                
+                const pos = this.getPosition(e);
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.lastX, this.lastY);
+                this.ctx.lineTo(pos.x, pos.y);
+                this.ctx.stroke();
+                
+                this.lastX = pos.x;
+                this.lastY = pos.y;
+                
+                this.canvas.classList.add('signed');
+            }
+            
+            stopDrawing() {
+                this.isDrawing = false;
+            }
+            
+            clear() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.canvas.classList.remove('signed');
+            }
+            
+            toDataURL() {
+                return this.canvas.toDataURL('image/png');
+            }
+            
+            isEmpty() {
+                const pixelData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+                return !pixelData.some(channel => channel !== 0);
+            }
+        }
+
+        const inspectorPad = new SignaturePad(document.getElementById('inspectorSign'));
+        const confirmerPad = new SignaturePad(document.getElementById('confirmerSign'));
+
+        // 서명 지우기 버튼
+        document.querySelectorAll('.clear-signature').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const target = this.dataset.target;
+                if (target === 'inspectorSign') {
+                    inspectorPad.clear();
+                } else {
+                    confirmerPad.clear();
+                }
+            });
+        });
+
+        // 점검 항목 데이터
+        const inspectionItems = [
+            { id: 'voltage', icon: '⚡', name: '상용 전원 전압 측정', standard: '기준: 220V ±13V' },
+            { id: 'ground', icon: '🔌', name: '접지 저항값 측정', standard: '기준: 10Ω 이하' },
+            { id: 'battery', icon: '🔋', name: '배터리 외관 점검', standard: '스웰링(부풀음) 여부' },
+            { id: 'temperature', icon: '🌡️', name: 'MDF실 온습도', standard: '20~27℃ / 50%' },
+            { id: 'labeling', icon: '🏷️', name: '단자대 라벨링 상태', standard: '식별표 부착' },
+            { id: 'broadcast', icon: '📢', name: '비상방송 연동 시험', standard: '화재신호 연동' },
+            { id: 'cctv', icon: '📹', name: 'CCTV 녹화 기간', standard: '기준: 30일 이상' }
+        ];
+
+        // 폼 데이터 수집
+        function collectFormData() {
+            const data = {
+                buildingName: document.getElementById('buildingName').value,
+                inspectionDate: document.getElementById('inspectionDate').value,
+                address: document.getElementById('address').value,
+                items: [],
+                inspectorSign: inspectorPad.toDataURL(),
+                confirmerSign: confirmerPad.toDataURL(),
+                timestamp: new Date().toISOString()
+            };
+
+            inspectionItems.forEach(item => {
+                const input = document.getElementById(item.id);
+                const value = input.value;
+                const activeBtn = document.querySelector(`[data-target="${item.id}"].active`);
+                const judgment = activeBtn ? (activeBtn.dataset.value === 'pass' ? '양호' : '불량') : '';
+                
+                data.items.push({
+                    id: item.id,
+                    name: item.name,
+                    standard: item.standard,
+                    icon: item.icon,
+                    value: value,
+                    judgment: judgment
+                });
+            });
+
+            return data;
+        }
+
+        // PDF 생성
+        async function generatePDF(data) {
+            // PDF 내용 채우기
+            document.getElementById('pdf-building').textContent = data.buildingName;
+            document.getElementById('pdf-date').textContent = data.inspectionDate;
+            document.getElementById('pdf-address').textContent = data.address;
+
+            const tbody = document.getElementById('pdf-table-body');
+            tbody.innerHTML = '';
+
+            data.items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.icon}</td>
+                    <td class="item-cell">${item.name}</td>
+                    <td>${item.standard}</td>
+                    <td>${item.value}</td>
+                    <td>${item.judgment === '양호' ? '○' : (item.judgment === '불량' ? '×' : '')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 서명 이미지 설정
+            if (!inspectorPad.isEmpty()) {
+                document.getElementById('pdf-inspector-sign').src = data.inspectorSign;
+            }
+            if (!confirmerPad.isEmpty()) {
+                document.getElementById('pdf-confirmer-sign').src = data.confirmerSign;
+            }
+
+            // PDF 생성
+            const { jsPDF } = window.jspdf;
+            const pdfContent = document.getElementById('pdf-content');
+            
+            // 잠시 보이게 해서 렌더링
+            pdfContent.style.position = 'absolute';
+            pdfContent.style.left = '0';
+            pdfContent.style.top = '0';
+            pdfContent.style.zIndex = '-1';
+
+            const canvas = await html2canvas(pdfContent, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            // 다시 숨기기
+            pdfContent.style.left = '-9999px';
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+            return pdf;
+        }
+
+        // Google Sheet 전송 (실제 구현 시 Apps Script 웹앱 URL 필요)
+        async function sendToGoogleSheet(data) {
+            // TODO: 실제 Google Apps Script 웹앱 URL로 교체
+            const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+            
+            // 데모용 - 실제로는 아래 코드 사용
+            /*
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            */
+            
+            // 시뮬레이션 (1초 대기)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return true;
+        }
+
+        // 제출 버튼 처리
+        document.getElementById('submitBtn').addEventListener('click', async function() {
+            const btn = this;
+            const statusMsg = document.getElementById('statusMessage');
+
+            // 유효성 검사
+            const buildingName = document.getElementById('buildingName').value;
+            const address = document.getElementById('address').value;
+
+            if (!buildingName || !address) {
+                statusMsg.textContent = '건물명과 주소를 입력해주세요.';
+                statusMsg.className = 'status-message error';
+                return;
+            }
+
+            // 로딩 상태
+            btn.classList.add('loading');
+            btn.disabled = true;
+            statusMsg.textContent = 'PDF 생성 중...';
+            statusMsg.className = 'status-message loading';
+
+            try {
+                const data = collectFormData();
+
+                // Google Sheet 전송
+                statusMsg.textContent = 'Google Sheet 저장 중...';
+                await sendToGoogleSheet(data);
+
+                // PDF 생성
+                statusMsg.textContent = 'PDF 생성 중...';
+                const pdf = await generatePDF(data);
+
+                // PDF 다운로드
+                const fileName = `점검보고서_${data.buildingName}_${data.inspectionDate}.pdf`;
+                pdf.save(fileName);
+
+                statusMsg.textContent = '✅ 제출 완료! PDF가 다운로드됩니다.';
+                statusMsg.className = 'status-message success';
+
+            } catch (error) {
+                console.error('Error:', error);
+                statusMsg.textContent = '❌ 오류가 발생했습니다. 다시 시도해주세요.';
+                statusMsg.className = 'status-message error';
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // 화면 크기 변경 시 서명 캔버스 재설정
+        window.addEventListener('resize', () => {
+            // 서명 데이터 보존을 위해 재설정하지 않음
+            // 필요시 별도 처리
+        });
+    </script>
+</body>
+</html>

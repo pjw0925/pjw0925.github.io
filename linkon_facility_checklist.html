@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LinkOn - 설비 현황표 [LO-SF-001]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #004999;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 헤더 */
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .form-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            text-align: center;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .form-code {
+            font-size: 12px;
+            color: var(--primary);
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .form-ref {
+            font-size: 11px;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        /* 카드 */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* 입력 필드 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* 설비 체크리스트 */
+        .facility-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .facility-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .facility-item:hover {
+            border-color: var(--gray-300);
+            background: var(--gray-50);
+        }
+
+        .facility-item.checked {
+            border-color: var(--success);
+            background: #ECFDF5;
+        }
+
+        .facility-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--gray-300);
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .facility-item.checked .facility-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .facility-checkbox::after {
+            content: '✓';
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .facility-item.checked .facility-checkbox::after {
+            opacity: 1;
+        }
+
+        .facility-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            flex: 1;
+        }
+
+        .facility-note {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        .facility-note:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* 카테고리 헤더 */
+        .category-header {
+            background: var(--gray-100);
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-header:first-child {
+            margin-top: 0;
+        }
+
+        .category-icon {
+            font-size: 16px;
+        }
+
+        /* 선택 현황 */
+        .selection-summary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .summary-count {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* 서명 영역 */
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .signature-canvas {
+            width: 100%;
+            height: 100px;
+            border: 2px dashed var(--gray-300);
+            border-radius: 10px;
+            background: var(--gray-50);
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .signature-canvas.signed {
+            border-style: solid;
+            border-color: var(--success);
+        }
+
+        .clear-signature {
+            margin-top: 8px;
+            padding: 6px 12px;
+            border: none;
+            background: var(--gray-200);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+
+        /* 제출 버튼 */
+        .submit-section {
+            margin-top: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 상태 메시지 */
+        .status-message {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #D1FAE5;
+            color: #065F46;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #FEE2E2;
+            color: #991B1B;
+            display: block;
+        }
+
+        .status-message.loading {
+            background: #DBEAFE;
+            color: #1E40AF;
+            display: block;
+        }
+
+        /* 전체 선택 버튼 */
+        .select-all-btn {
+            padding: 8px 16px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .select-all-btn:hover {
+            background: var(--gray-200);
+        }
+
+        /* PDF 미리보기 (숨김) */
+        #pdf-content {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 210mm;
+            background: white;
+            padding: 15mm 20mm;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .pdf-header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .pdf-doc-ref {
+            font-size: 12px;
+            color: #666;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .pdf-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .pdf-code {
+            font-size: 11px;
+            color: #0066CC;
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .pdf-page-num {
+            font-size: 11px;
+            color: #666;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .pdf-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .pdf-info-table td {
+            border: 1px solid #333;
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .pdf-info-table .label {
+            background: #f5f5f5;
+            font-weight: 600;
+            width: 80px;
+            text-align: center;
+        }
+
+        .pdf-main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .pdf-main-table th,
+        .pdf-main-table td {
+            border: 1px solid #333;
+            padding: 6px 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .pdf-main-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        .pdf-main-table .item-cell {
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .pdf-footer {
+            margin-top: 20px;
+        }
+
+        .pdf-date-line {
+            text-align: right;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .pdf-signature-line {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .pdf-signature-box {
+            width: 150px;
+            height: 50px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .pdf-signature-box img {
+            max-height: 45px;
+            max-width: 140px;
+        }
+
+        .pdf-notes {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .pdf-notes p {
+            margin-bottom: 3px;
+        }
+
+        /* 로딩 스피너 */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .submit-btn.loading .spinner {
+            display: block;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 반응형 */
+        @media (max-width: 400px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .facility-name {
+                font-size: 13px;
+            }
+
+            .facility-note {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">L</div>
+                <div>
+                    <div class="logo-text">LinkOn</div>
+                    <div class="logo-sub">스마트 설비 관리 시스템</div>
+                </div>
+            </div>
+            <div class="form-title">정보통신설비 유지보수·관리 및 성능점검 대상 현황표</div>
+            <div class="form-code">양식번호: LO-SF-001-v1</div>
+            <div class="form-ref">■ 정보통신설비 유지보수·관리기준 [별지 제1호서식]</div>
+        </div>
+
+        <!-- 기본 정보 -->
+        <div class="card">
+            <div class="card-title">기본 정보</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">상호(명칭)</label>
+                    <input type="text" class="form-input" id="companyName" placeholder="예: ○○빌딩">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">작성일자</label>
+                    <input type="date" class="form-input" id="writeDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">현장주소</label>
+                <input type="text" class="form-input" id="siteAddress" placeholder="예: 서울특별시 강남구...">
+            </div>
+        </div>
+
+        <!-- 선택 현황 -->
+        <div class="selection-summary">
+            <div>
+                <div class="summary-label">선택된 설비</div>
+            </div>
+            <div class="summary-count" id="selectedCount">0개</div>
+        </div>
+
+        <!-- 설비 체크리스트 -->
+        <div class="card">
+            <div class="card-title">대상 설비 선택</div>
+            
+            <!-- 기본 통신 설비 -->
+            <div class="category-header">
+                <span class="category-icon">📡</span>
+                기본 통신 설비
+            </div>
+            <div class="facility-grid" id="basicFacilities">
+                <!-- JavaScript로 생성 -->
+            </div>
+
+            <!-- 방송/음향 설비 -->
+            <div class="category-header">
+                <span class="category-icon">📢</span>
+                방송/음향 설비
+            </div>
+            <div class="facility-grid" id="broadcastFacilities">
+            </div>
+
+            <!-- 보안/출입 시스템 -->
+            <div class="category-header">
+                <span class="category-icon">🔐</span>
+                보안/출입 시스템
+            </div>
+            <div class="facility-grid" id="securityFacilities">
+            </div>
+
+            <!-- 주차/편의 시스템 -->
+            <div class="category-header">
+                <span class="category-icon">🚗</span>
+                주차/편의 시스템
+            </div>
+            <div class="facility-grid" id="parkingFacilities">
+            </div>
+
+            <!-- 스마트/IoT 시스템 -->
+            <div class="category-header">
+                <span class="category-icon">🌐</span>
+                스마트/IoT 시스템
+            </div>
+            <div class="facility-grid" id="smartFacilities">
+            </div>
+
+            <!-- 전원/접지 설비 -->
+            <div class="category-header">
+                <span class="category-icon">⚡</span>
+                전원/접지 설비
+            </div>
+            <div class="facility-grid" id="powerFacilities">
+            </div>
+        </div>
+
+        <!-- 서명 -->
+        <div class="card">
+            <div class="card-title">작성자 서명</div>
+            <div class="signature-box">
+                <div class="signature-label">작성자</div>
+                <canvas class="signature-canvas" id="writerSign"></canvas>
+                <button type="button" class="clear-signature" data-target="writerSign">지우기</button>
+            </div>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div class="card">
+            <div class="submit-section">
+                <button type="button" class="submit-btn" id="submitBtn">
+                    <span class="btn-text">📄 PDF 생성 및 제출</span>
+                    <div class="spinner"></div>
+                </button>
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF 생성용 숨김 영역 -->
+    <div id="pdf-content">
+        <div class="pdf-doc-ref">■ 정보통신설비 유지보수·관리기준 [별지 제1호서식]</div>
+        <div class="pdf-header">
+            <div class="pdf-title">정보통신설비 유지보수·관리 및 성능점검 대상 현황표</div>
+        </div>
+        <div class="pdf-code">양식번호: LO-SF-001-v1</div>
+        <div class="pdf-page-num">(1 쪽)</div>
+
+        <table class="pdf-info-table">
+            <tr>
+                <td class="label">상호(명칭)</td>
+                <td id="pdf-company"></td>
+                <td class="label">현장주소</td>
+                <td id="pdf-address"></td>
+            </tr>
+        </table>
+
+        <table class="pdf-main-table">
+            <thead>
+                <tr>
+                    <th style="width: 35%">대상설비</th>
+                    <th style="width: 8%">대상</th>
+                    <th style="width: 12%">비고</th>
+                    <th style="width: 35%">대상설비</th>
+                    <th style="width: 8%">대상</th>
+                    <th style="width: 12%">비고</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-table-body">
+            </tbody>
+        </table>
+
+        <div class="pdf-footer">
+            <div class="pdf-date-line">작성일자 : <span id="pdf-date"></span></div>
+            <div class="pdf-signature-line">
+                작성자 : 
+                <div class="pdf-signature-box">
+                    <img id="pdf-writer-sign" src="" alt="">
+                </div>
+                (서 명)
+            </div>
+        </div>
+
+        <div class="pdf-notes">
+            <p>1. [별표 1]에 규정된 설비 및 시설을 참고하여 작성한다.</p>
+            <p>2. 해당 건축물등의 특성과 여건에 적합하도록 점검대상 정보통신설비 및 현황표를 추가·변경할 수 있다.</p>
+            <p>3. [ ]에는 점검대상 설비에 해당하는 경우 ∨ 표시를 한다.</p>
+        </div>
+    </div>
+
+    <script>
+        // 설비 목록 데이터
+        const facilityData = {
+            basic: [
+                { id: 'cable', name: '케이블 설비' },
+                { id: 'pipe', name: '배관 설비' },
+                { id: 'entrance', name: '국선인입 설비' },
+                { id: 'terminal', name: '단자함 설비' },
+                { id: 'mobile', name: '이동통신 구내선로 설비' },
+                { id: 'phone', name: '전화 설비' },
+                { id: 'network', name: '네트워크 설비' },
+                { id: 'homeNetwork', name: '홈네트워크 설비' }
+            ],
+            broadcast: [
+                { id: 'antenna', name: '방송 공동수신 안테나 시설' },
+                { id: 'catv', name: '종합유선방송 구내 전송선로 설비' },
+                { id: 'sound', name: '방송 음향 설비' },
+                { id: 'bis', name: '빌딩 안내 시스템(BIS)' },
+                { id: 'signage', name: '디지털 사이니지' }
+            ],
+            security: [
+                { id: 'access', name: '전자출입(통제) 시스템' },
+                { id: 'cctv', name: '영상정보처리기기 시스템' },
+                { id: 'emergency', name: '비상벨 설비' },
+                { id: 'burglar', name: '스마트 도난방지 시스템' },
+                { id: 'boundary', name: '지능형 경계 감시 시스템' }
+            ],
+            parking: [
+                { id: 'parkingControl', name: '주차관제 시스템' },
+                { id: 'parkingGuide', name: '주차유도 시스템' },
+                { id: 'unmanned', name: '무인택배 시스템' },
+                { id: 'remote', name: '원격검침 시스템' },
+                { id: 'clock', name: '전기시계 시스템' }
+            ],
+            smart: [
+                { id: 'si', name: '통합 SI 시스템' },
+                { id: 'facilityMgmt', name: '시설관리 시스템' },
+                { id: 'energy', name: '건물 에너지관리 시스템' },
+                { id: 'counting', name: '지능형 인원계수 시스템' },
+                { id: 'hospital', name: '스마트 병원 설비(의료용 너스콜)' },
+                { id: 'factory', name: '스마트 공장 시스템' },
+                { id: 'library', name: '스마트 도서관 시스템' },
+                { id: 'soundSource', name: '지능형 이상음원 시스템' },
+                { id: 'underground', name: 'IoT기반 지하공간 안전관리 시스템' }
+            ],
+            power: [
+                { id: 'powerSupply', name: '통신용 전원 설비' },
+                { id: 'grounding', name: '통신 접지 설비' }
+            ]
+        };
+
+        // 오늘 날짜 기본값
+        document.getElementById('writeDate').valueAsDate = new Date();
+
+        // 설비 항목 생성
+        function createFacilityItem(facility) {
+            return `
+                <div class="facility-item" data-id="${facility.id}">
+                    <div class="facility-checkbox"></div>
+                    <span class="facility-name">${facility.name}</span>
+                    <input type="text" class="facility-note" placeholder="비고" data-note="${facility.id}">
+                </div>
+            `;
+        }
+
+        // 각 카테고리에 항목 추가
+        document.getElementById('basicFacilities').innerHTML = 
+            facilityData.basic.map(createFacilityItem).join('');
+        document.getElementById('broadcastFacilities').innerHTML = 
+            facilityData.broadcast.map(createFacilityItem).join('');
+        document.getElementById('securityFacilities').innerHTML = 
+            facilityData.security.map(createFacilityItem).join('');
+        document.getElementById('parkingFacilities').innerHTML = 
+            facilityData.parking.map(createFacilityItem).join('');
+        document.getElementById('smartFacilities').innerHTML = 
+            facilityData.smart.map(createFacilityItem).join('');
+        document.getElementById('powerFacilities').innerHTML = 
+            facilityData.power.map(createFacilityItem).join('');
+
+        // 체크박스 토글
+        document.querySelectorAll('.facility-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.classList.contains('facility-note')) return;
+                this.classList.toggle('checked');
+                updateCount();
+            });
+        });
+
+        // 선택 개수 업데이트
+        function updateCount() {
+            const count = document.querySelectorAll('.facility-item.checked').length;
+            document.getElementById('selectedCount').textContent = count + '개';
+        }
+
+        // 서명 캔버스
+        class SignaturePad {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.isDrawing = false;
+                this.lastX = 0;
+                this.lastY = 0;
+                
+                this.setupCanvas();
+                this.bindEvents();
+            }
+            
+            setupCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width * 2;
+                this.canvas.height = rect.height * 2;
+                this.ctx.scale(2, 2);
+                this.ctx.strokeStyle = '#000';
+                this.ctx.lineWidth = 2;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+            }
+            
+            bindEvents() {
+                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+                this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+                
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startDrawing(e.touches[0]);
+                });
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    this.draw(e.touches[0]);
+                });
+                this.canvas.addEventListener('touchend', () => this.stopDrawing());
+            }
+            
+            getPosition(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+            
+            startDrawing(e) {
+                this.isDrawing = true;
+                const pos = this.getPosition(e);
+                this.lastX = pos.x;
+                this.lastY = pos.y;
+            }
+            
+            draw(e) {
+                if (!this.isDrawing) return;
+                const pos = this.getPosition(e);
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.lastX, this.lastY);
+                this.ctx.lineTo(pos.x, pos.y);
+                this.ctx.stroke();
+                this.lastX = pos.x;
+                this.lastY = pos.y;
+                this.canvas.classList.add('signed');
+            }
+            
+            stopDrawing() {
+                this.isDrawing = false;
+            }
+            
+            clear() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.canvas.classList.remove('signed');
+            }
+            
+            toDataURL() {
+                return this.canvas.toDataURL('image/png');
+            }
+            
+            isEmpty() {
+                const pixelData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+                return !pixelData.some(channel => channel !== 0);
+            }
+        }
+
+        const writerPad = new SignaturePad(document.getElementById('writerSign'));
+
+        document.querySelector('.clear-signature').addEventListener('click', function() {
+            writerPad.clear();
+        });
+
+        // 전체 설비 목록 (PDF용)
+        const allFacilities = [
+            ...facilityData.basic,
+            ...facilityData.broadcast,
+            ...facilityData.security,
+            ...facilityData.parking,
+            ...facilityData.smart,
+            ...facilityData.power
+        ];
+
+        // 폼 데이터 수집
+        function collectFormData() {
+            const data = {
+                companyName: document.getElementById('companyName').value,
+                writeDate: document.getElementById('writeDate').value,
+                siteAddress: document.getElementById('siteAddress').value,
+                facilities: [],
+                writerSign: writerPad.toDataURL(),
+                timestamp: new Date().toISOString()
+            };
+
+            document.querySelectorAll('.facility-item').forEach(item => {
+                const id = item.dataset.id;
+                const checked = item.classList.contains('checked');
+                const noteInput = item.querySelector('.facility-note');
+                const note = noteInput ? noteInput.value : '';
+                const name = item.querySelector('.facility-name').textContent;
+
+                data.facilities.push({
+                    id: id,
+                    name: name,
+                    checked: checked,
+                    note: note
+                });
+            });
+
+            return data;
+        }
+
+        // PDF 생성
+        async function generatePDF(data) {
+            document.getElementById('pdf-company').textContent = data.companyName;
+            document.getElementById('pdf-address').textContent = data.siteAddress;
+            
+            const dateObj = new Date(data.writeDate);
+            const year = dateObj.getFullYear().toString().slice(-2);
+            const month = String(dateObj.getMonth() + 1).padStart(2, ' ');
+            const day = String(dateObj.getDate()).padStart(2, ' ');
+            document.getElementById('pdf-date').textContent = `20${year} 년 ${month} 월 ${day} 일`;
+
+            // 테이블 생성 (2열 구조)
+            const tbody = document.getElementById('pdf-table-body');
+            tbody.innerHTML = '';
+
+            const facilities = data.facilities;
+            const halfLength = Math.ceil(facilities.length / 2);
+
+            for (let i = 0; i < halfLength; i++) {
+                const left = facilities[i];
+                const right = facilities[i + halfLength];
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="item-cell">${left ? left.name : ''}</td>
+                    <td>${left ? (left.checked ? '☑' : '☐') : ''}</td>
+                    <td>${left ? left.note : ''}</td>
+                    <td class="item-cell">${right ? right.name : ''}</td>
+                    <td>${right ? (right.checked ? '☑' : '☐') : ''}</td>
+                    <td>${right ? right.note : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            // 서명
+            if (!writerPad.isEmpty()) {
+                document.getElementById('pdf-writer-sign').src = data.writerSign;
+            }
+
+            // PDF 생성
+            const { jsPDF } = window.jspdf;
+            const pdfContent = document.getElementById('pdf-content');
+            
+            pdfContent.style.position = 'absolute';
+            pdfContent.style.left = '0';
+            pdfContent.style.top = '0';
+            pdfContent.style.zIndex = '-1';
+
+            const canvas = await html2canvas(pdfContent, {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            pdfContent.style.left = '-9999px';
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+            return pdf;
+        }
+
+        // Google Sheet 전송
+        async function sendToGoogleSheet(data) {
+            // TODO: 실제 Google Apps Script URL로 교체
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return true;
+        }
+
+        // 제출 버튼
+        document.getElementById('submitBtn').addEventListener('click', async function() {
+            const btn = this;
+            const statusMsg = document.getElementById('statusMessage');
+
+            const companyName = document.getElementById('companyName').value;
+            const siteAddress = document.getElementById('siteAddress').value;
+
+            if (!companyName || !siteAddress) {
+                statusMsg.textContent = '상호(명칭)와 현장주소를 입력해주세요.';
+                statusMsg.className = 'status-message error';
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+            statusMsg.textContent = 'PDF 생성 중...';
+            statusMsg.className = 'status-message loading';
+
+            try {
+                const data = collectFormData();
+
+                statusMsg.textContent = 'Google Sheet 저장 중...';
+                await sendToGoogleSheet(data);
+
+                statusMsg.textContent = 'PDF 생성 중...';
+                const pdf = await generatePDF(data);
+
+                const fileName = `설비현황표_${data.companyName}_${data.writeDate}.pdf`;
+                pdf.save(fileName);
+
+                statusMsg.textContent = '✅ 제출 완료! PDF가 다운로드됩니다.';
+                statusMsg.className = 'status-message success';
+
+            } catch (error) {
+                console.error('Error:', error);
+                statusMsg.textContent = '❌ 오류가 발생했습니다. 다시 시도해주세요.';
+                statusMsg.className = 'status-message error';
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
